@@ -20,4 +20,5 @@ package() {
     install -Dm644 "var/lib/environment/compositor/manjaro.conf" "${pkgdir}/var/lib/environment/compositor/manjaro.conf"
     install -Dm644 "var/lib/environment/nemo/70-manjaro.conf" "${pkgdir}/var/lib/environment/nemo/70-manjaro.conf"
     install -Dm644 "var/lib/environment/nemo/manjaro.conf" "${pkgdir}/var/lib/environment/nemo/manjaro.conf"
+    install -Dm644 "usr/lib/systemd/system/nemomobile.service" "${pkgdir}/usr/lib/systemd/system/nemomobile.service"
 }

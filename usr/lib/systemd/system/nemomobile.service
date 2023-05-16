@@ -1,0 +1,14 @@
+[Unit]
+Description=nemomobile
+Requires=android-mount.service
+After=lxc@android.service
+
+[Service]
+ExecStartPre=/usr/bin/waitforservice init.svc.vendor.hwcomposer-*
+ExecStart=/usr/bin/nemomobile
+ExecStop=/usr/bin/pkill lipstick
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
