@@ -1,0 +1,10 @@
+#!/bin/bash
+
+mkdir -p /run/user/32011
+chown manjaro:manjaro -R /run/user/32011
+chmod 700 /run/user/32011
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
+
+sleep 10s
+mcetool --set-demo-mode=on
+mcetool -P

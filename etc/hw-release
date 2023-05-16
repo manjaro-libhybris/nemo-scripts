@@ -1,0 +1,8 @@
+NAME="Manjaro libhybris"
+ID=manjaro
+MER_HA_DEVICE=manjaro
+MER_HA_VENDOR=libhybris
+VERSION="1"
+VERSION_ID=1
+PRETTY_NAME=" 1"
+HOME_URL="https://github.com/manjaro-libhybris/"
