@@ -1,10 +1,25 @@
 #!/bin/bash
 
+pkill -9 maliit-server
+pkill -9 messageserver5
+
+# set up user session directory
 mkdir -p /run/user/32011
 chown manjaro:manjaro -R /run/user/32011
 chmod 700 /run/user/32011
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
 
+# start nemo
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
 sleep 10s
+
+# start maliit
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM="wayland" maliit-server" &
+
+# start messageserver
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer messageserver5" &
+
+# start pulseaudio
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
+
 mcetool --set-demo-mode=on
 mcetool -P
