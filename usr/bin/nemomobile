@@ -2,6 +2,10 @@
 
 pkill -9 maliit-server
 pkill -9 messageserver5
+pkill -9 dsme
+pkill -9 pulseaudio
+pkill -9 nemo-devicelock-daemon
+pkill -9 timed-qt5
 
 # set up user session directory
 mkdir -p /run/user/32011
@@ -12,8 +16,11 @@ chmod 700 /run/user/32011
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
 sleep 10s
 
+# start dsme
+dsme -- -p /usr/lib/dsme/startup.so &
+
 # start maliit
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM="wayland" maliit-server" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland dbus-launch maliit-server" &
 
 # start messageserver
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer messageserver5" &
@@ -21,5 +28,20 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer
 # start pulseaudio
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
 
+# start timed
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer timed-qt5" &
+
+# create the sockets directory and start nemo-devicelock
+mkdir -p /run/nemo-devicelock/
+nemo-devicelock-daemon &
+
+
+# hacks to get the device to a usable state
 mcetool --set-demo-mode=on
-mcetool -P
+mcetool -j enabled
+mcetool --set-suspend-policy=disabled
+mcetool --blank-prevent
+mcetool --set-blank-prevent-mode=keep-on
+mcetool --set-display-brightness=100
+mcetool --set-never-blank=enabled
+mcetool --set-doubletap-mode=unlock
