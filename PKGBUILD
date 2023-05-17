@@ -17,6 +17,7 @@ package() {
     install -Dm644 "etc/hw-release" "${pkgdir}/etc/hw-release"
     install -Dm644 "etc/pulse/xpolicy.conf" "${pkgdir}/etc/pulse/xpolicy.conf"
     install -Dm644 "etc/systemd/system/usb-tethering.service.d/10-connman.conf" "${pkgdir}/etc/systemd/system/usb-tethering.service.d/10-connman.conf"
+    install -Dm644 "etc/ofono/dbusaccess.conf" "${pkgdir}/etc/ofono/dbusaccess.conf"
     install -Dm755 "usr/bin/nemomobile" "${pkgdir}/usr/bin/nemomobile"
     install -Dm644 "var/lib/environment/compositor/manjaro.conf" "${pkgdir}/var/lib/environment/compositor/manjaro.conf"
     install -Dm644 "var/lib/environment/nemo/70-manjaro.conf" "${pkgdir}/var/lib/environment/nemo/70-manjaro.conf"
