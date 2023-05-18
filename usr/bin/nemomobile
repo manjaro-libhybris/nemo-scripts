@@ -41,7 +41,7 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch qmf-account
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch messageserver5" &
 
 # start pulseaudio
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
 
 # start timed-qt5
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 timed-qt5" &
