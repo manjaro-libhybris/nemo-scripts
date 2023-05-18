@@ -1,19 +1,28 @@
 #!/bin/bash
 
+# kill everything before starting
+pkill -9 lipstick
+pkill -9 dsme
 pkill -9 maliit-server
 pkill -9 messageserver5
-pkill -9 dsme
 pkill -9 pulseaudio
-pkill -9 nemo-devicelock-daemon
 pkill -9 timed-qt5
+pkill -9 voicecall-manager
+pkill -9 commhistoryd
+pkill -9 msyncd
+pkill -9 glacier-polkit-agent
+pkill -9 glacier-settings
+pkill -9 glacier-messages
+pkill -9 glacier-dialer
+pkill -9 nemo-devicelock-daemon
 
 # set up user session directory
 mkdir -p /run/user/32011
 chown manjaro:manjaro -R /run/user/32011
-chmod 700 /run/user/32011
+chmod 700 -R /run/user/32011
 
-# start nemo
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
+# start lipstick
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 QT_QUICK_CONTROLS_STYLE=Nemo GLACIER_NATIVEORIENTATION=1 QT_QPA_EGLFS_NO_LIBINPUT=1 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
 sleep 10s
 
 # start dsme
@@ -23,18 +32,42 @@ dsme -- -p /usr/lib/dsme/startup.so &
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland dbus-launch maliit-server" &
 
 # start messageserver
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer messageserver5" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch messageserver5" &
 
 # start pulseaudio
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
 
 # start timed
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer timed-qt5" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 timed-qt5" &
+
+# start voicecall manager
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch voicecall-manager" &
+
+# start commhistoryd
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch commhistoryd" &
+
+# start msyncd
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch msyncd" &
+
+# start glacier-polkit-agent
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-polkit-agent" &
+
+# start glacier-settings
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-settings -p" &
+
+# start glacier-messages
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-messages -p" &
+
+# start glacier-dialer
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-dialer --prestart" &
 
 # create the sockets directory and start nemo-devicelock
 mkdir -p /run/nemo-devicelock/
 nemo-devicelock-daemon &
 
+# set the modem to online
+ofonoctl poweron || true
+ofonoctl online || true
 
 # hacks to get the device to a usable state
 mcetool --set-demo-mode=on
