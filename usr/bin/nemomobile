@@ -36,6 +36,9 @@ dsme -- -p /usr/lib/dsme/startup.so &
 # start maliit-server
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland dbus-launch maliit-server" &
 
+# start maliit-keyboard
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=wayland dbus-launch maliit-keyboard" &
+
 # start messageserver5
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch qmf-accountscheck &" || true
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch messageserver5" &
