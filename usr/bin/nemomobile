@@ -22,6 +22,7 @@ pkill -9 mission-control-5
 pkill -9 ohm-session-agent
 pkill -9 profiled
 pkill -9 signond
+pkill -9 emailnotificationd
 pkill -9 nemo-devicelock-daemon
 pkill -9 accounts-daemon
 
@@ -31,7 +32,7 @@ chown manjaro:manjaro -R /run/user/32011
 chmod 700 -R /run/user/32011
 
 # start lipstick
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 QT_QUICK_CONTROLS_STYLE=Nemo GLACIER_NATIVEORIENTATION=1 QT_QPA_EGLFS_NO_LIBINPUT=1 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 QT_QUICK_CONTROLS_STYLE=Nemo GLACIER_NATIVEORIENTATION=1 QT_QPA_EGLFS_NO_LIBINPUT=1 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer dbus-launch lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
 sleep 10s
 
 # start dsme
@@ -97,6 +98,9 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch profiled" &
 
 # start signond
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch signond -backup" &
+
+# start emailnotificationd
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch /usr/bin/emailnotificationd" &
 
 # create the sockets directory and start nemo-devicelock
 mkdir -p /run/nemo-devicelock/
