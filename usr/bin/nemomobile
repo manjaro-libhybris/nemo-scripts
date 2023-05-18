@@ -14,6 +14,11 @@ pkill -9 glacier-polkit-agent
 pkill -9 glacier-settings
 pkill -9 glacier-messages
 pkill -9 glacier-dialer
+pkill -9 glacier-alarm-listener
+pkill -9 mission-control-5
+pkill -9 ohm-session-agent
+pkill -9 profiled
+pkill -9 signond
 pkill -9 nemo-devicelock-daemon
 
 # set up user session directory
@@ -28,19 +33,20 @@ sleep 10s
 # start dsme
 dsme -- -p /usr/lib/dsme/startup.so &
 
-# start maliit
+# start maliit-server
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland dbus-launch maliit-server" &
 
-# start messageserver
+# start messageserver5
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch qmf-accountscheck &" || true
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch messageserver5" &
 
 # start pulseaudio
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 pulseaudio --daemonize=no -n --file=/etc/pulse/droid.pa" &
 
-# start timed
+# start timed-qt5
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 timed-qt5" &
 
-# start voicecall manager
+# start voicecall-manager
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch voicecall-manager" &
 
 # start commhistoryd
@@ -60,6 +66,21 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland
 
 # start glacier-dialer
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-dialer --prestart" &
+
+# start glacier-alarm-listener
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-alarm-listener -p" &
+
+# start mission-control-5
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch /usr/lib/telepathy/mission-control-5" &
+
+# start ohm-session-agent
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch ohm-session-agent" &
+
+# start profiled
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch profiled" &
+
+# start signond
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch signond -backup" &
 
 # create the sockets directory and start nemo-devicelock
 mkdir -p /run/nemo-devicelock/
