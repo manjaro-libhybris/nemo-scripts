@@ -9,17 +9,21 @@ pkill -9 pulseaudio
 pkill -9 timed-qt5
 pkill -9 voicecall-manager
 pkill -9 commhistoryd
+pkill -9 calendardataservice
 pkill -9 msyncd
 pkill -9 glacier-polkit-agent
 pkill -9 glacier-settings
 pkill -9 glacier-messages
 pkill -9 glacier-dialer
+pkill -9 glacier-components
+pkill -9 glacier-gallery
 pkill -9 glacier-alarm-listener
 pkill -9 mission-control-5
 pkill -9 ohm-session-agent
 pkill -9 profiled
 pkill -9 signond
 pkill -9 nemo-devicelock-daemon
+pkill -9 accounts-daemon
 
 # set up user session directory
 mkdir -p /run/user/32011
@@ -58,6 +62,9 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch commhistory
 # start msyncd
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch msyncd" &
 
+# start calendardataservice
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch calendardataservice" &
+
 # start glacier-polkit-agent
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-polkit-agent" &
 
@@ -68,7 +75,13 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-messages -p" &
 
 # start glacier-dialer
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-dialer --prestart" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-dialer -p" &
+
+# start glacier-components
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-components -p" &
+
+# start glacier-gallery
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-gallery -p" &
 
 # start glacier-alarm-listener
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland glacier-alarm-listener -p" &
@@ -89,6 +102,9 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch signond -ba
 mkdir -p /run/nemo-devicelock/
 nemo-devicelock-daemon &
 
+# start accounts-daemon
+/usr/lib/accounts-daemon &
+
 # set the modem to online
 ofonoctl poweron || true
 ofonoctl online || true
@@ -102,3 +118,4 @@ mcetool --set-blank-prevent-mode=keep-on
 mcetool --set-display-brightness=100
 mcetool --set-never-blank=enabled
 mcetool --set-doubletap-mode=unlock
+mcetool --set-als-autobrightness=disabled
