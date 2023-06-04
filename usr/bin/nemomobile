@@ -1,9 +1,14 @@
 #!/bin/bash
 
 # kill everything before starting
+pkill -9 dbus-daemon
+pkill -9 obexd
 pkill -9 lipstick
+pkill -9 dconf-service
+pkill -9 glib-pacrunner
 pkill -9 dsme
 pkill -9 maliit-server
+pkill -9 maliit-keyboard
 pkill -9 messageserver5
 pkill -9 pulseaudio
 pkill -9 timed-qt5
@@ -22,7 +27,6 @@ pkill -9 mission-control-5
 pkill -9 ohm-session-agent
 pkill -9 profiled
 pkill -9 signond
-pkill -9 emailnotificationd
 pkill -9 nemo-devicelock-daemon
 pkill -9 accounts-daemon
 
@@ -31,15 +35,30 @@ mkdir -p /run/user/32011
 chown manjaro:manjaro -R /run/user/32011
 chmod 700 -R /run/user/32011
 
+# start dbus user message bus
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-daemon --session" &
+
+# bluetooth obex
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch /usr/lib/bluetooth/obexd" &
+
 # start lipstick
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 QT_QUICK_CONTROLS_STYLE=Nemo GLACIER_NATIVEORIENTATION=1 QT_QPA_EGLFS_NO_LIBINPUT=1 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer dbus-launch lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_IM_MODULE=maliit QT_QPA_EGLFS_PHYSICAL_HEIGHT=130 QT_QPA_EGLFS_PHYSICAL_WIDTH=65 QT_QUICK_CONTROLS_STYLE=Nemo GLACIER_NATIVEORIENTATION=1 QT_QPA_EGLFS_NO_LIBINPUT=1 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=hwcomposer GSETTINGS_BACKEND=memory dbus-launch lipstick -plugin evdevtouch:/dev/input/event2 -plugin evdevkeyboard" &
 sleep 10s
+
+# start dconf database
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 /usr/lib/dconf-service" &
+
+# start glib proxy service
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch /usr/lib/glib-pacrunner" &
+
+# accessibility service
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 GSETTINGS_BACKEND=memory dbus-launch /usr/lib/at-spi-bus-launcher" &
 
 # start dsme
 dsme -- -p /usr/lib/dsme/startup.so &
 
 # start maliit-server
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland dbus-launch maliit-server" &
+sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 QT_QPA_PLATFORM=wayland GSETTINGS_BACKEND=memory dbus-launch maliit-server" &
 
 # start maliit-keyboard
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 EGL_PLATFORM=hwcomposer QT_QPA_PLATFORM=wayland dbus-launch maliit-keyboard" &
@@ -99,9 +118,6 @@ sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch profiled" &
 # start signond
 sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch signond -backup" &
 
-# start emailnotificationd
-sudo -u manjaro bash -c "XDG_RUNTIME_DIR=/run/user/32011 dbus-launch /usr/bin/emailnotificationd" &
-
 # create the sockets directory and start nemo-devicelock
 mkdir -p /run/nemo-devicelock/
 nemo-devicelock-daemon &
@@ -123,3 +139,5 @@ mcetool --set-display-brightness=100
 mcetool --set-never-blank=enabled
 mcetool --set-doubletap-mode=unlock
 mcetool --set-als-autobrightness=disabled
+
+systemctl restart usb-tethering
